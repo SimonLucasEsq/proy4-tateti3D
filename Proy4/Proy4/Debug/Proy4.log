@@ -1,9 +1,10 @@
-﻿  Cube.cpp
-  main.cpp
-E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Proy4\main.cpp(73,18): warning C4305: '+=': truncamiento de 'double' a 'float'
-E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Proy4\main.cpp(76,38): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Proy4\main.cpp(76,29): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Proy4\main.cpp(76,20): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-  Generando código...
-E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Proy4\main.cpp(103,19): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
-  Proy4.vcxproj -> E:\cod\graficos\proyecto4\proy4-tateti3D\Proy4\Debug\Proy4.exe
+﻿  main.cpp
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(7,28): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(8,21): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(61,11): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(62,11): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(124,18): warning C4305: '+=': truncamiento de 'double' a 'float'
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(127,38): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(127,29): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\cod\graficos\proy3\Proy4\Proy4\main.cpp(127,20): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+  Proy4.vcxproj -> C:\cod\graficos\proy3\Proy4\Debug\Proy4.exe

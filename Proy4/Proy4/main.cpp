@@ -1,10 +1,17 @@
 #include "GL/freeglut.h"
 #include <iostream>
+#include <cmath>
 using namespace std;
 
-float camx = 0.0, camy = 0.0, camz = 0.0;
-float atx = 0.0, aty = 0.0;
+float zoom = 12.0;
+float zoomSensibility = 0.2;
+float camspeed = 0.1;
 
+float camx = 0.0,	camy = 0.0, camz = zoom;
+float angx = 0.0,	angy = 0.0, angz = 0.0;
+float tx = 0.0,		ty = 1.0,	tz = 0.0;
+
+int width, height;
 
 void reshape(int w, int h);
 void drawCube();
@@ -21,18 +28,60 @@ void display(void) {
 	glLoadIdentity();//limpia la matriz 
 	gluLookAt(
 		//posición de la cámara
-		0.0 + camx, 5.0 + camy, 10.0 + camz,
+		camx, camy, camz,
+		//0.0, 0.0, 0.0,
 		//hacia donde mira la cámara
-		0.0 + atx, 0.0 + aty, 0.0,
+		0.0, 0.0, 0.0,
 		//orientación de la cámara (para que pueda mirar de cabeza o de costado)
-		0.0, 1.0, 0.0
+		//0.0, 0.0, 1.0
+		tx, ty, tz
 	);//sitúa el punto de vista respecto al punto de atención
+	/* test de camara 
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(tx, ty, tz);
+	glEnd();
 
+	glColor3f(0.0, 1.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(camx, camy, camz);
+	glEnd();
+	*/
 	drawCube();
 
 	glFlush();
 	glutSwapBuffers();
 
+}
+
+void mouseFunc(int button, int state, int coor_x, int coor_y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+		float x = ((float)coor_x / (float)width) * 2.0 - 1.0;
+		float y = ((float)coor_y / (float)height) * 2.0 - 1.0;
+		cout << x << ", " << y << "\n";
+	}
+}
+
+void mouseWheel(int button, int dir, int x, int y) {
+	if (dir > 0) {
+		zoom -= zoomSensibility;
+	}
+	else {
+		zoom += zoomSensibility;
+	}
+
+	float sx = sin(angx);
+	float cx = cos(angx);
+	float sy = sin(angy);
+	float cy = cos(angy);
+
+	camx = zoom * (sy);
+	camy = zoom * (sx * cy);
+	camz = zoom * (cx * cy);
+
+	display();
 }
 
 int main(int argc, char** argv) {
@@ -47,6 +96,8 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
+	glutMouseFunc(mouseFunc);
+	glutMouseWheelFunc(mouseWheel);
 	glutMainLoop();
 	return EXIT_SUCCESS;
 }
@@ -92,6 +143,8 @@ void drawCube() {
 
 
 void reshape(int w, int h) {
+	width = w;
+	height = h;
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	glMatrixMode(GL_PROJECTION);//activar la matriz de proyeccion
 	glLoadIdentity();
@@ -100,66 +153,55 @@ void reshape(int w, int h) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-	float speed = 0.2;
 	switch (key) {
 		// para mover la cámara
 	case 'a':
 	case 'A':
-		camx -= speed;
-		display();
+		angy -= camspeed;
 		break;
 	case 'd':
 	case 'D':
-		camx += speed;
-		display();
+		angy += camspeed;
 		break;
 
 	case 'w':
 	case 'W':
-		camz -= speed;
-		display();
+		angx -= camspeed;
 		break;
 
 	case 's':
 	case 'S':
-		camz += speed;
-		display();
+		angx += camspeed;
 		break;
-
 	case 'q':
 	case 'Q':
-		camy += speed;
-		display();
+		angz -= camspeed;
 		break;
-
 	case 'e':
 	case 'E':
-		camy -= speed;
-		display();
-		break;
-
-		// para mover el punto de vista
-	case 'j':
-	case 'J':
-		atx -= speed;
-		display();
-		break;
-	case 'l':
-	case 'L':
-		atx += speed;
-		display();
-		break;
-
-	case 'i':
-	case 'I':
-		aty += speed;
-		display();
-		break;
-
-	case 'k':
-	case 'K':
-		aty -= speed;
-		display();
+		angz += camspeed;
 		break;
 	}
+
+	float sx = sin(angx);
+	float cx = cos(angx);
+	float sy = sin(angy);
+	float cy = cos(angy);
+
+	camx = zoom * (sy);
+	camy = zoom * (sx * cy);
+	camz = zoom * (cx * cy);
+
+	sx = sin(-angx);
+	cx = cos(-angx);
+	sy = sin(-angy);
+	cy = cos(-angy);
+	float sz = sin(-angz);
+	float cz = cos(-angz);
+
+	tx = -(sz * cy);
+	ty = -sx * sy * sz + cx * cz;
+	tz = cx * sy * sz + cz * sx;
+
+	display();
 }
