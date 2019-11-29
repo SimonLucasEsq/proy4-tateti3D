@@ -27,7 +27,7 @@ Mat3f rotMatrix(Vec3f u, float ang);
 int currPlayer = 1;
 int width = 720, height = 720;
 
-Cube c;
+Cube cube;
 
 
 void reshape(int w, int h);
@@ -102,18 +102,11 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 		antCam = Vec3f(camx, camy, camz);
 		// obtengo el punto de impacto en el espacio 3d antes de mover la cámara
 		float x = ((2.0f * (float)coor_x) / (float)width) - 1.0f;
-		if (x > 0) {
-			x /= 0.96f;
-			if (x > 1) x = 1;
-		}
 		float y = 1.0f - (((float)coor_y * 2) / (float)height);
-		if (y < 0) {
-			y /= 0.96f;
-			if (y < -1) y = -1;
-		}
+		
 		float z = -1.0f;
 
-		float angx = tan(x/1.5f);
+		float angx = tan(x/1.8f);
 		float angy = tan(y/1.5f);
 
 		cout << "camera " << x << ", " << y;
@@ -136,12 +129,16 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 		// compruebo si colisiona con algún ojeto
 		int* collide = checkCollide(dir);
 		if (collide != NULL) {
-			cout << "chocó con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << "\n";
-			/*if (c.isEmpty(collide[0], collide[1], collide[2])) {
-				c.mark(currPlayer, collide[0], collide[1], collide[2]);
+			//cout << "chocó con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << "\n";
+			int cox = collide[0];
+			int coy = collide[1];
+			int coz = collide[2];
+			cout << "chocó con x:" << cox << ", y:" << coy << ", z:" << coz << "\n";
+			if (cube.isEmpty(cox, coy, coz)) {
+				cube.mark(currPlayer, collide[0], collide[1], collide[2]);
 			} else {
 				// TODO: anunciar que es una pieza ocupada
-			}*/
+			}
 		} else {
 			cout << "sin choque\n";
 		}
@@ -179,7 +176,7 @@ int* checkCollide(Vec3f d) {
 	}
 	if (collideDist != INFINITY) {
 		cout << "\nt: " << collideDist << "\n";
-		return retPos;
+		return &retPos[0];
 	}
 	return NULL;
 
@@ -284,6 +281,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB);
 
 	glutCreateWindow("Proy 4 | Simon Esquivel | Martin Tamay");
+	cube = Cube();
 	init();
 	glDepthFunc(GL_ALWAYS);
 	glutDisplayFunc(display);
@@ -318,6 +316,8 @@ void drawCube() {
 				glColor3f(count, 1-count, 1-count);
 				glPushMatrix();
 				glTranslatef(x * 1.5, y * 1.5, z * 1.5);
+				int player = cube.playerAt(x + 1, y + 1, z + 1);
+				// agregar textura dependiendo del player
 				if (centerTest(x, y, z)) {
 					glutSolidCube(1);
 				}
