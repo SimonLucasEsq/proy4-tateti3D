@@ -1,5 +1,7 @@
 #include "GL/freeglut.h"
+#include <windows.h>
 #include <iostream>
+#include<mmsystem.h>
 #include <cmath>
 #include "vecmath/vecmath.h"
 #include "vecmath/mat.h"
@@ -292,6 +294,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB);
 	glutCreateWindow("Proy 4 | Simon Esquivel | Martin Tamay");
 	cube = Cube();
+	PlaySound("background.wav", NULL, SND_FILENAME | SND_ASYNC);
 	init();
 	glDepthFunc(GL_ALWAYS);
 	loadTextures();
