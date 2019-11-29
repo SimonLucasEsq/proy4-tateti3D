@@ -17,6 +17,7 @@ float zoomSensibility = 0.2;
 float camspeed = 0.1;
 
 float camx = 0.0,	camy = 0.0, camz = zoom;
+
 Vec3f rightVect(1.0f, 0.0f, 0.0f);
 Vec3f upVect(0.0f, 1.0f, 0.0f);
 Vec3f backVect(0.0f, 0.0f, 1.0f);
@@ -26,6 +27,8 @@ Mat3f rotMatrix(Vec3f u, float ang);
 
 int currPlayer = 1;
 int width = 720, height = 720;
+
+bool disableCollides;
 
 Cube cube;
 
@@ -92,6 +95,9 @@ void display(void) {
 
 void mouseFunc(int button, int state, int coor_x, int coor_y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+		if (disableCollides) {
+			cout << "\nEl juego ya ha terminado, sabes? pesiona R para reiniciar\n";
+		}
 		antCam = Vec3f(camx, camy, camz);
 		// obtengo el punto de impacto en el espacio 3d antes de mover la camara
 		float x = ((2.0f * (float)coor_x) / (float)width) - 1.0f;
@@ -102,7 +108,7 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 		float angx = tan(x);
 		float angy = tan(y);
 
-		cout << "camera " << x << ", " << y;
+		//cout << "camera " << x << ", " << y;
 
 		Mat3f rotx = rotMatrix(upVect, -angx);
 		Mat3f roty = rotMatrix(rightVect, angy);
@@ -124,16 +130,20 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 		int* collide = checkCollide(dir);
 		if (collide != NULL) {
 			int player = cube.playerAt(collide[0], collide[1], collide[2]);
-			cout << "choco con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << " player: " << player << "\n";
+			cout << "choco con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << " player: " << cube.nextPlayer() << "\n";
 			if (player == 0) {
-				cube.mark(currPlayer, collide[0], collide[1], collide[2]);
+				cube.mark(cube.nextPlayer(), collide[0], collide[1], collide[2]);
+				if (cube.getWinner() > 0) {
+					cout << "Felicidades player" << cube.getWinner() << " has ganado!!";
+					disableCollides = true;
+				}
 			}
 			else {
-				// TODO: anunciar que es una pieza ocupada
+				cout << "\nEste pieza ya fue ocupada!\n";
 			}
 		}
 		else {
-			cout << "sin choque\n";
+			cout << "\nsin choque\n";
 		}
 		delete[] collide;
 	}
@@ -166,7 +176,7 @@ int* checkCollide(Vec3f d) {
 		}
 	}
 	if (collideDist != INFINITY) {
-		cout << "\nt: " << collideDist << "\n";
+		//cout << "\nt: " << collideDist << "\n";
 		return retPos;
 	}
 	return NULL;
@@ -208,7 +218,7 @@ float collideSphere(Vec3f o, Vec3f d) {
 	}
 
 	Vec3f pos = o + d * ft;
-	cout << "l" << pos.length()<<"  ";
+	//cout << "l" << pos.length()<<"  ";
 	if (pos.length() > 0.5f) {
 		return -1;
 	}
@@ -260,7 +270,7 @@ void mouseWheel(int button, int dir, int x, int y) {
 	camx += move * backVect[0];
 	camy += move * backVect[1];
 	camz += move * backVect[2];
-	cout << "zoom " << zoom << "\n";
+	//cout << "zoom " << zoom << "\n";
 	display();
 }
 
@@ -303,10 +313,12 @@ void drawCube() {
 		for (int y = -1; y <= 1; y++) {
 			for (int x = -1; x <= 1; x++) {
 				count += 0.02;
-				glColor3f(count, 1-count, 1-count);
+				int player = cube.playerAt(x + 1, y + 1, z + 1);
+				float r = player == 1 ? 0.5 : 0.0;
+				float b = player == 2 ? 0.5 : 0.0;
+				glColor3f(count * 0.5 + r, 1 - count, (1 - count) * 0.5 + b);
 				glPushMatrix();
 				glTranslatef(x * 1.5, y * 1.5, z * 1.5);
-				int player = cube.playerAt(x + 1, y + 1, z + 1);
 				// agregar textura dependiendo del player
 				if (centerTest(x, y, z)) {
 					glutSolidCube(1);
@@ -326,6 +338,7 @@ void drawCube() {
 
 
 void init(void) {
+	disableCollides = false;
 	glClearColor(0, 0, 0, 0);
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 20.0);
 	glEnable(GL_DEPTH_TEST);
@@ -401,6 +414,10 @@ void keyboard(unsigned char key, int x_key, int y_key) {
 		v2 = &rightVect;
 		v3 = &upVect;
 		break;
+	case 'r':
+	case 'R':
+		cube = Cube();
+		cout << "\nJuego reiniciado\n";
 	default:
 		return;
 	}

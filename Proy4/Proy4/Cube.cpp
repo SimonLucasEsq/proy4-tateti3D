@@ -13,6 +13,21 @@ Cube::Cube() {
 	winner = 0;
 }
 
+bool checkIfCenter(int x, int y, int z) {
+	return x == 1 && y == 1 && z == 1;
+}
+
+bool twoPlanesTest(int a, int b) {
+	return checkIfCenter || (a == 0 && b == 0) || (a == 3 && b == 3);
+}
+
+bool threePlanesTest(int x, int y, int z) {
+	return checkIfCenter ||
+		(x == 0 || x == 2) &&
+		(y == 0 || y == 2) &&
+		(z == 0 || z == 2);
+}
+
 // TODO: Ejecutar en otro hilo la comprobación
 void Cube::checkWinner(int x, int y, int z) {
 	int player = structure[x][y][z];
@@ -52,16 +67,166 @@ void Cube::checkWinner(int x, int y, int z) {
 	}
 
 	//controlo si no gana en 2 planos
-	count = 0;
-	for (int i = 0; i < 3; i++) {
-		if (structure[x][i][i] != player) {
-			break;
+	if (twoPlanesTest(x, y)) {
+		count = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[i][j][z] != player){
+					break;
+				}
+				count++;
+			}
 		}
-		count++;
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+		count = 0;
+		for (int i = 2; i >= 0; i--) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[i][j][z] != player) {
+					break;
+				}
+				count++;
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
 	}
-	if (count == 3) {
-		winner = player;
-		return;
+
+
+	if (twoPlanesTest(y, z)) {
+		count = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[x][i][j] != player) {
+					break;
+				}
+				count++;
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+		count = 0;
+		for (int i = 2; i >= 0; i--) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[x][i][j] != player) {
+					break;
+				}
+				count++;
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+	}
+
+
+	if (twoPlanesTest(x, z)) {
+		count = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[i][y][j] != player) {
+					break;
+				}
+				count++;
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+		count = 0;
+		for (int i = 2; i >= 0; i--) {
+			for (int j = 0; j < 2; j++) {
+				if (structure[i][y][j] != player) {
+					break;
+				}
+				count++;
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+	}
+
+	// comprobaciones para en 3 planos
+	if (threePlanesTest(x, y, z)) {
+		count = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k < 2; k++) {
+					if (structure[i][j][k] != player) {
+						break;
+					}
+					count++;
+				}
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+
+		count = 0;
+		for (int i = 2; i >= 0; i--) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k < 2; k++) {
+					if (structure[i][j][k] != player) {
+						break;
+					}
+					count++;
+				}
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+
+		count = 0;
+		for (int i = 2; i >= 0; i--) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 2; k >= 0; k--) {
+					if (structure[i][j][k] != player) {
+						break;
+					}
+					count++;
+				}
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
+
+
+		count = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 2; k >= 0; k--) {
+					if (structure[i][j][k] != player) {
+						break;
+					}
+					count++;
+				}
+			}
+		}
+		if (count == 3) {
+			winner = player;
+			return;
+		}
 	}
 
 	// TODO: Terminar
