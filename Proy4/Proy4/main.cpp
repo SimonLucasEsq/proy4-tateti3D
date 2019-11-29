@@ -5,7 +5,7 @@
 #include "vecmath/mat.h"
 #include "vecmath/vec.h"
 #include "Cube.h"
-
+#include "TextureLoader.h"
 using namespace std;
 
 const double HUGE_DOUBLE = 1e100;
@@ -31,7 +31,7 @@ int width = 720, height = 720;
 bool disableCollides;
 
 Cube cube;
-
+GLuint textureId[2];
 void init(void);
 void reshape(int w, int h);
 bool centerTest(int x, int y, int z);
@@ -40,7 +40,7 @@ void keyboard(unsigned char key, int x, int y);
 float collideBox(Vec3f o, Vec3f d);
 float collideSphere(Vec3f o, Vec3f d);
 int* checkCollide(Vec3f d);
-
+void loadTextures();
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 	glLoadIdentity();//limpia la matriz 
@@ -92,7 +92,12 @@ void display(void) {
 	glutSwapBuffers();
 
 }
-
+void loadTextures() {
+	TextureLoader t = TextureLoader("player1.bmp");
+	textureId[0] = t.loadTexture();
+	t.setFileName("player2.bmp");
+	textureId[1] = t.loadTexture();
+}
 void mouseFunc(int button, int state, int coor_x, int coor_y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		if (disableCollides) {
@@ -279,11 +284,11 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(width, height);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB);
-
 	glutCreateWindow("Proy 4 | Simon Esquivel | Martin Tamay");
 	cube = Cube();
 	init();
 	glDepthFunc(GL_ALWAYS);
+	loadTextures();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
@@ -320,12 +325,22 @@ void drawCube() {
 				glPushMatrix();
 				glTranslatef(x * 1.5, y * 1.5, z * 1.5);
 				// agregar textura dependiendo del player
+				if (player != 0) {
+					glEnable(GL_TEXTURE_2D);
+					glEnable(GL_TEXTURE_GEN_S);
+					glEnable(GL_TEXTURE_GEN_T);
+					glBindTexture(GL_TEXTURE_2D, textureId[player - 1]);
+				}
+				// agregar textura dependiendo del player
 				if (centerTest(x, y, z)) {
 					glutSolidCube(1);
 				}
 				else {
 					glutSolidSphere(0.5, 50, 50);
 				}
+				glDisable(GL_TEXTURE_GEN_S);
+				glDisable(GL_TEXTURE_GEN_T);
+				glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
 			}
 		}
