@@ -7,7 +7,9 @@
 TextureLoader::TextureLoader(const char* fileName) {
 	this->fileName = fileName;
 };
-
+void TextureLoader::setFileName(const char* fileName) {
+	this->fileName = fileName;
+}
 int TextureLoader::getWidth() {
 	return width;
 };

@@ -12,6 +12,8 @@ public:
 	int getHeight();
 	/*Return the image data*/
 	unsigned char* getData();
+	/*Set the texture fileName*/
+	void setFileName(const char* fileName);
 private:
 	const char* fileName = "";
 	unsigned char* data = NULL;
