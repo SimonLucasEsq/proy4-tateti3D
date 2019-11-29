@@ -1,4 +1,6 @@
 #include "Cube.h"
+#include <iostream>
+using namespace std;
 
 
 Cube::Cube() {
@@ -68,45 +70,42 @@ void Cube::checkWinner(int x, int y, int z) {
 
 	//controlo si no gana en 2 planos
 	if (twoPlanesTest(x, y)) {
+		cout << "entro";
 		count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[i][j][z] != player){
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[i][i][z] != player){
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
 			return;
 		}
+		cout << " y x " << count << "\n";
 
 		count = 0;
-		for (int i = 2; i >= 0; i--) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[i][j][z] != player) {
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[2-i][i][z] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
 			return;
 		}
+		cout << " y x " << count << "\n";
 	}
 
 
 	if (twoPlanesTest(y, z)) {
 		count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[x][i][j] != player) {
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[x][i][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
@@ -114,30 +113,28 @@ void Cube::checkWinner(int x, int y, int z) {
 		}
 
 		count = 0;
-		for (int i = 2; i >= 0; i--) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[x][i][j] != player) {
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[x][2-i][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
 			return;
 		}
+		cout << " y z " << count << "\n";
 	}
 
 
 	if (twoPlanesTest(x, z)) {
+		cout << "entro";
 		count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[i][y][j] != player) {
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[i][y][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
@@ -145,32 +142,27 @@ void Cube::checkWinner(int x, int y, int z) {
 		}
 
 		count = 0;
-		for (int i = 2; i >= 0; i--) {
-			for (int j = 0; j < 2; j++) {
-				if (structure[i][y][j] != player) {
-					break;
-				}
-				count++;
+		for (int i = 0; i < 3; i++) {
+			if (structure[2-i][y][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
 			return;
 		}
+		cout << " x z " << count << "\n";
 	}
 
 	// comprobaciones para en 3 planos
 	if (threePlanesTest(x, y, z)) {
 		count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				for (int k = 0; k < 2; k++) {
-					if (structure[i][j][k] != player) {
-						break;
-					}
-					count++;
-				}
+		for (int i = 0; i < 3; i++) {
+			if (structure[i][i][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
@@ -179,15 +171,11 @@ void Cube::checkWinner(int x, int y, int z) {
 
 
 		count = 0;
-		for (int i = 2; i >= 0; i--) {
-			for (int j = 0; j < 2; j++) {
-				for (int k = 0; k < 2; k++) {
-					if (structure[i][j][k] != player) {
-						break;
-					}
-					count++;
-				}
+		for (int i = 2; i < 0; i++) {
+			if (structure[2-i][i][i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
@@ -196,15 +184,11 @@ void Cube::checkWinner(int x, int y, int z) {
 
 
 		count = 0;
-		for (int i = 2; i >= 0; i--) {
-			for (int j = 0; j < 2; j++) {
-				for (int k = 2; k >= 0; k--) {
-					if (structure[i][j][k] != player) {
-						break;
-					}
-					count++;
-				}
+		for (int i = 0; i < 3; i++) {
+			if (structure[2-i][i][2-i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
@@ -213,15 +197,11 @@ void Cube::checkWinner(int x, int y, int z) {
 
 
 		count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				for (int k = 2; k >= 0; k--) {
-					if (structure[i][j][k] != player) {
-						break;
-					}
-					count++;
-				}
+		for (int i = 0; i < 3; i++) {
+			if (structure[i][i][2-i] != player) {
+				break;
 			}
+			count++;
 		}
 		if (count == 3) {
 			winner = player;
