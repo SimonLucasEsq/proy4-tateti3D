@@ -142,6 +142,7 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 			int player = cube.playerAt(collide[0], collide[1], collide[2]);
 			cout << "choco con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << " player: " << cube.nextPlayer() << "\n";
 			if (player == 0) {
+				PlaySound("boing.wav", NULL, SND_FILENAME | SND_ASYNC);
 				cube.mark(cube.nextPlayer(), collide[0], collide[1], collide[2]);
 				if (cube.getWinner() > 0) {
 					cout << "Felicidades player" << cube.getWinner() << " has ganado!!";
