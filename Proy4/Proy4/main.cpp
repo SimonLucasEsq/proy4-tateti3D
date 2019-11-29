@@ -29,7 +29,7 @@ int width = 720, height = 720;
 
 Cube cube;
 
-
+void init(void);
 void reshape(int w, int h);
 bool centerTest(int x, int y, int z);
 void drawCube();
@@ -37,13 +37,6 @@ void keyboard(unsigned char key, int x, int y);
 float collideBox(Vec3f o, Vec3f d);
 float collideSphere(Vec3f o, Vec3f d);
 int* checkCollide(Vec3f d);
-
-void init(void) {
-	glClearColor(0, 0, 0, 0);
-	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
-	glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);
-}
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
@@ -100,48 +93,49 @@ void display(void) {
 void mouseFunc(int button, int state, int coor_x, int coor_y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		antCam = Vec3f(camx, camy, camz);
-		// obtengo el punto de impacto en el espacio 3d antes de mover la cámara
+		// obtengo el punto de impacto en el espacio 3d antes de mover la camara
 		float x = ((2.0f * (float)coor_x) / (float)width) - 1.0f;
 		float y = 1.0f - (((float)coor_y * 2) / (float)height);
-		
+
 		float z = -1.0f;
 
-		float angx = tan(x/1.8f);
-		float angy = tan(y/1.5f);
+		float angx = tan(x);
+		float angy = tan(y);
 
 		cout << "camera " << x << ", " << y;
-		
+
 		Mat3f rotx = rotMatrix(upVect, -angx);
 		Mat3f roty = rotMatrix(rightVect, angy);
 		//Mat3f rotz = rotMatrix(rightVect, 180);
-		Mat3f rot = rotx * roty ;
+		Mat3f rot = rotx * roty;
 		Mat3f points(
 			backVect[0], 0.0f, 0.0f,
 			backVect[1], 0.0f, 0.0f,
 			backVect[2], 0.0f, 0.0f
 		);
 		Mat3f resp = rot * points;
-		Vec3f dir(-resp[0][0], -resp[1][0], -resp[2][0]);
+		Vec3f dir(-resp[0][0], -resp[1][0] - 0.02, -resp[2][0]);
+
 		dir.normalize();
 
 
 		col = dir;
-		// compruebo si colisiona con algún ojeto
+		// compruebo si colisiona con algun ojeto
 		int* collide = checkCollide(dir);
 		if (collide != NULL) {
-			//cout << "chocó con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << "\n";
-			int cox = collide[0];
-			int coy = collide[1];
-			int coz = collide[2];
-			cout << "chocó con x:" << cox << ", y:" << coy << ", z:" << coz << "\n";
-			if (cube.isEmpty(cox, coy, coz)) {
+			int player = cube.playerAt(collide[0], collide[1], collide[2]);
+			cout << "choco con x:" << collide[0] << ", y:" << collide[1] << ", z:" << collide[2] << " player: " << player << "\n";
+			if (player == 0) {
 				cube.mark(currPlayer, collide[0], collide[1], collide[2]);
-			} else {
+			}
+			else {
 				// TODO: anunciar que es una pieza ocupada
 			}
-		} else {
+		}
+		else {
 			cout << "sin choque\n";
 		}
+		delete[] collide;
 	}
 	display();
 }
@@ -150,20 +144,17 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 int* checkCollide(Vec3f d) {
 	// usar las colisiones del proyecto 3
 	float collideDist = INFINITY;
-	int retPos[3];
+	int* retPos = new int[3];
 	for (int z = -1; z <= 1; z++) {
 		for (int y = -1; y <= 1; y++) {
 			for (int x = -1; x <= 1; x++) {
-				//cout << "\n\n\ntesteando " << x + 1 << " " << y + 1 << " " << z + 1 << "\n";
-				//cout << "x:" << x * 1.5 << " y:" << y * 1.5 << " z:" << z * 1.5 << "\n";
 				float collided;
 				Vec3f lo(camx - x * 1.5, camy - y * 1.5, camz - z * 1.5);
 				if (centerTest(x, y, z)) {
-					//cout << "box\n";
 					collided = collideBox(lo, d);
-				} else {
+				}
+				else {
 					collided = collideSphere(lo, d);
-					//cout << "sphere\n";
 				}
 				if (collided >= 0 && collided < collideDist) {
 					collideDist = collided;
@@ -176,10 +167,9 @@ int* checkCollide(Vec3f d) {
 	}
 	if (collideDist != INFINITY) {
 		cout << "\nt: " << collideDist << "\n";
-		return &retPos[0];
+		return retPos;
 	}
 	return NULL;
-
 }
 
 float collideSphere(Vec3f o, Vec3f d) {
@@ -335,13 +325,20 @@ void drawCube() {
 }
 
 
+void init(void) {
+	glClearColor(0, 0, 0, 0);
+	glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 20.0);
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+}
+
 void reshape(int w, int h) {
 	width = w;
 	height = h;
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	glMatrixMode(GL_PROJECTION);//activar la matriz de proyeccion
 	glLoadIdentity();
-	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);// definicion del volumen de visualizacion
+	glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 20.0);// definicion del volumen de visualizacion
 	glMatrixMode(GL_MODELVIEW);//restaurar la matriz de modelo-vista como activa*/
 }
 

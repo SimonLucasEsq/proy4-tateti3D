@@ -9,6 +9,8 @@ Cube::Cube() {
 			}
 		}
 	}
+	marked = 0;
+	winner = 0;
 }
 
 // TODO: Ejecutar en otro hilo la comprobación
@@ -70,10 +72,6 @@ int Cube::playerAt(int x, int y, int z) {
 }
 
 bool Cube::mark(int player, int x, int y, int z) {
-	if (!isEmpty(x, y, z))
-	{
-		return false;
-	}
 	marked++;
 	structure[x][y][z] = player;
 	checkWinner(x, y, z);
