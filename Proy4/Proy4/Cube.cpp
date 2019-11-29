@@ -1,4 +1,16 @@
 #include "Cube.h"
+
+
+Cube::Cube() {
+	for (int x = 0; x < 3; x++) {
+		for (int y = 0; y < 3; y++) {
+			for (int z = 0; z < 3; z++) {
+				structure[x][y][z] = 0;
+			}
+		}
+	}
+}
+
 // TODO: Ejecutar en otro hilo la comprobación
 void Cube::checkWinner(int x, int y, int z) {
 	int player = structure[x][y][z];
@@ -51,6 +63,10 @@ void Cube::checkWinner(int x, int y, int z) {
 	}
 
 	// TODO: Terminar
+}
+
+int Cube::playerAt(int x, int y, int z) {
+	return structure[x][y][z];
 }
 
 bool Cube::mark(int player, int x, int y, int z) {

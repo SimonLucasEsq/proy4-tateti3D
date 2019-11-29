@@ -12,6 +12,7 @@ private:
 	void checkWinner(int x, int y, int z);
 
 public:
+	Cube();
 	/* mark a piece for a player, true if succes, false if is ocupied */
 	bool mark(int player, int x, int y, int z);
 	/* Check if is empty */
@@ -22,4 +23,6 @@ public:
 	int nextPlayer();
 	/* return the number of plays so far */
 	int plays();
+	/* return the player at one position */
+	int playerAt(int x, int y, int z);
 };
