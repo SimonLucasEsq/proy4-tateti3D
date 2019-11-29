@@ -28,7 +28,7 @@ Mat3f rotMatrix(Vec3f u, float ang);
 int currPlayer = 1;
 int width = 720, height = 720;
 
-bool disableCollides;
+bool disableCollides, drawClic;
 
 Cube cube;
 GLuint textureId[2];
@@ -58,7 +58,7 @@ void display(void) {
 
 
 	drawCube();
-	glColor3f(1.0, 0.5, 1.0);
+	/*glColor3f(1.0, 0.5, 1.0);
 	glBegin(GL_LINES);
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(upVect[0], upVect[1], upVect[2]);
@@ -73,20 +73,22 @@ void display(void) {
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(backVect[0], backVect[1], backVect[2]);
 	glEnd();
-
+	*/
 	// el clic
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(col[0], col[1], col[2]);
-	glEnd();
+	
+	if (drawClic) {
+		glColor3f(1.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(col[0], col[1], col[2]);
+		glEnd();
 
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3f(antCam[0], antCam[1], antCam[2]);
-	glVertex3f(antCam[0] + col[0] * 100, antCam[1] + col[1] * 100, antCam[2] + col[2] * 100);
-	glEnd();
-
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3f(antCam[0], antCam[1], antCam[2]);
+		glVertex3f(antCam[0] + col[0] * 100, antCam[1] + col[1] * 100, antCam[2] + col[2] * 100);
+		glEnd();
+	}
 
 	glFlush();
 	glutSwapBuffers();
@@ -102,6 +104,7 @@ void mouseFunc(int button, int state, int coor_x, int coor_y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		if (disableCollides) {
 			cout << "\nEl juego ya ha terminado, sabes? pesiona R para reiniciar\n";
+			return;
 		}
 		antCam = Vec3f(camx, camy, camz);
 		// obtengo el punto de impacto en el espacio 3d antes de mover la camara
@@ -270,6 +273,9 @@ float collideBox(Vec3f o, Vec3f d) {
 
 void mouseWheel(int button, int dir, int x, int y) {
 	float move = zoomSensibility * -dir;
+	if (move + zoom < 0) {
+		return;
+	}
 	zoom += move;
 
 	camx += move * backVect[0];
@@ -347,13 +353,14 @@ void drawCube() {
 	}
 
 	glColor3f(0, 1, 0);
-	glutWireCube(3.0);
+	//glutWireCube(3.0);
 	glutWireCube(1.0);
 }
 
 
 void init(void) {
 	disableCollides = false;
+	drawClic = false;
 	glClearColor(0, 0, 0, 0);
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 20.0);
 	glEnable(GL_DEPTH_TEST);
@@ -429,9 +436,15 @@ void keyboard(unsigned char key, int x_key, int y_key) {
 		v2 = &rightVect;
 		v3 = &upVect;
 		break;
+	case 'c':
+	case 'C':
+		drawClic = !drawClic;
+		cout << "\nMostrando Vectores\n";
+		return;
 	case 'r':
 	case 'R':
 		cube = Cube();
+		disableCollides = false;
 		cout << "\nJuego reiniciado\n";
 	default:
 		return;
